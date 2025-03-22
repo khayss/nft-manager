@@ -35,7 +35,7 @@ pub const FINALIZE_FRACTIONALIZE_DATA_TAG: &[u8] = b"finfdt";
 
 // TODO: Update this constant
 #[constant]
-pub const MAX_AGE: u64 = 86_400;
+pub const MAX_AGE: u64 = 259_200;
 
 #[constant]
 pub const WEIGHT_KEY: &str = "weight";

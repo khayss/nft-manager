@@ -45,7 +45,7 @@ pub struct ListNFT<'info> {
         init,
         payer = owner,
         space = 8 + Listing::INIT_SPACE,
-        seeds = [LISTING_TAG, mint.key().as_ref(), owner.key().as_ref()],
+        seeds = [LISTING_TAG, mint.key().as_ref(),],
         bump
     )]
     pub listing: Box<Account<'info, Listing>>,

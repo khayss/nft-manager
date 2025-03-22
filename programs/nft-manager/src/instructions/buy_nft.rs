@@ -37,8 +37,8 @@ pub struct BuyNFT<'info> {
 
     #[account(
         mut,
-        close = seller,
-        seeds = [LISTING_TAG, mint.key().as_ref(), seller.key().as_ref()],
+        close = seller_account,
+        seeds = [LISTING_TAG, mint.key().as_ref()],
         bump,
         has_one = mint @NFTManagerError::InvalidListing,
     )]
@@ -92,16 +92,14 @@ impl<'info> BuyNFT<'info> {
         let listing_token_account = self.listing_token_account.to_account_info();
 
         let price = self.listing.price;
-        let fees = self.fees_collector.sell_fee;
+        let fees_percentage = self.fees_collector.sell_fee;
         let fees_decimals = self.fees_collector.fees_decimals;
 
         let fees = price
-            .checked_mul(fees as u64)
+            .checked_mul(fees_percentage as u64)
             .ok_or(NFTManagerError::Overflow)?
             .checked_div(10u64.pow(fees_decimals as u32))
             .ok_or(NFTManagerError::Overflow)?;
-
-        let bal = price - fees;
 
         system::transfer(
             CpiContext::new(
@@ -122,7 +120,7 @@ impl<'info> BuyNFT<'info> {
                     to: self.seller_account.to_account_info(),
                 },
             ),
-            bal,
+            price,
         )?;
 
         let listing_key = listing.key();

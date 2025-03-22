@@ -391,7 +391,6 @@ describe("nft-manager", () => {
     ]);
     const [listingPda, listingPdaBump] = getPda(program, Pda.Listing, [
       mintPda.toBuffer(),
-      program.provider.publicKey.toBuffer(),
     ]);
     const [listingTokenAccountPda, listingTokenAccountPdaBump] = getPda(
       program,
@@ -440,10 +439,7 @@ describe("nft-manager", () => {
     const [mintPda] = getPda(program, Pda.Mint, [
       mintDiscriminant.toArrayLike(Buffer, "le", 8),
     ]);
-    const [listingPda] = getPda(program, Pda.Listing, [
-      mintPda.toBuffer(),
-      program.provider.publicKey.toBuffer(),
-    ]);
+    const [listingPda] = getPda(program, Pda.Listing, [mintPda.toBuffer()]);
 
     const buyNftIx = await program.methods
       .buyNft(mintDiscriminant)
@@ -477,10 +473,7 @@ describe("nft-manager", () => {
     const [mintPda] = getPda(program, Pda.Mint, [
       mintDiscriminant.toArrayLike(Buffer, "le", 8),
     ]);
-    const [listingPda] = getPda(program, Pda.Listing, [
-      mintPda.toBuffer(),
-      program.provider.publicKey.toBuffer(),
-    ]);
+    const [listingPda] = getPda(program, Pda.Listing, [mintPda.toBuffer()]);
 
     // List the NFT first
     const listNftIx = await program.methods
@@ -522,10 +515,7 @@ describe("nft-manager", () => {
     const [mintPda] = getPda(program, Pda.Mint, [
       mintDiscriminant.toArrayLike(Buffer, "le", 8),
     ]);
-    const [listingPda] = getPda(program, Pda.Listing, [
-      mintPda.toBuffer(),
-      program.provider.publicKey.toBuffer(),
-    ]);
+    const [listingPda] = getPda(program, Pda.Listing, [mintPda.toBuffer()]);
 
     const delistNftIx = await program.methods
       .delistNft(mintDiscriminant)

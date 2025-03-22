@@ -12,6 +12,30 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  rustfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
+      - name: Check formatting
+        run: cargo fmt --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    env:
+      # Make sure CI fails on all warnings - including Clippy lints.
+      RUSTFLAGS: "-Dwarnings"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
+      - run: cargo lint
+
   build_and_test:
     runs-on: ubuntu-latest
     name: Build and Test
@@ -21,7 +45,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install Anchor CLI
+        # Install Anchor CLI
       - name: Install Anchor CLI
         uses: heyAyushh/setup-anchor@v4.4
         with:
@@ -30,6 +54,7 @@ jobs:
           node-version: 20.x
           use-avm: false
 
+        # Display Versions and Install pnpm
       - name: Display Versions and Install pnpm
         run: |
           solana -V
@@ -38,41 +63,42 @@ jobs:
           anchor -V
           npm i -g pnpm
 
+        # Build and Test
       - name: Build and Test
         run: |
           function build_and_test() {
-            local project=$1
-            echo "Building and Testing $project"
-            cd "$project" || return 1
+              local project=$1
+              echo "Building and Testing $project"
+              cd "$project" || return 1
 
-            # Run anchor build
-            if ! anchor build; then
-              echo "::error::anchor build failed for $project"
-              echo "$project: anchor build failed" >> $GITHUB_WORKSPACE/failed_projects.txt
-              rm -rf target
-              cd - > /dev/null
-              return 1
-            fi
+              # Run anchor build
+              if ! anchor build; then
+                  echo "::error::anchor build failed for $project"
+                  echo "$project: anchor build failed" >> $GITHUB_WORKSPACE/failed_projects.txt
+                  rm -rf target
+                  cd - > /dev/null
+                  return 1
+              fi
 
-            # Install dependencies
-            if ! pnpm install --frozen-lockfile; then
-              echo "::error::pnpm install failed for $project"
-              echo "$project: pnpm install failed" >> $GITHUB_WORKSPACE/failed_projects.txt
-              cd - > /dev/null
-              return 1
-            fi
+              # Install dependencies
+              if ! pnpm install --frozen-lockfile; then
+                  echo "::error::pnpm install failed for $project"
+                  echo "$project: pnpm install failed" >> $GITHUB_WORKSPACE/failed_projects.txt
+                  cd - > /dev/null
+                  return 1
+              fi
 
-            # Run anchor test
-            if ! anchor test; then
-              echo "::error::anchor test failed for $project"
-              echo "$project: anchor test failed" >> $GITHUB_WORKSPACE/failed_projects.txt
+              # Run anchor test
+              if ! anchor test; then
+                  echo "::error::anchor test failed for $project"
+                  echo "$project: anchor test failed" >> $GITHUB_WORKSPACE/failed_projects.txt
+                  rm -rf target node_modules
+                  cd - > /dev/null
+                  return 1
+              fi
+
+              echo "Build and tests succeeded for $project."
               rm -rf target node_modules
               cd - > /dev/null
-              return 1
-            fi
-
-            echo "Build and tests succeeded for $project."
-            rm -rf target node_modules
-            cd - > /dev/null
-            return 0
+              return 0
           }

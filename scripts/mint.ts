@@ -11,7 +11,12 @@ async function main() {
   const mintEventId = nftManagerProgram.addEventListener(
     "mintNftEvent",
     (event) => {
-      console.log("Event received: ", event);
+      console.log("Mint: ", event.mint.toString());
+      console.log("Discriminant: ", event.discriminant.toString());
+      console.log(
+        "Price in Sol: ",
+        event.price.toNumber() / anchor.web3.LAMPORTS_PER_SOL
+      );
       nftManagerProgram.methods
         .finalizeMintNft(event.discriminant)
         .rpc()

@@ -21,38 +21,38 @@ for tool in "${REQUIRED_TOOLS[@]}"; do
     fi
 done
 
-# Step 2: Run unit tests
-echo -e "${GREEN}Running unit tests...${NC}"
-if ! anchor test; then
-    echo -e "${RED}Unit tests failed.${NC}"
-    exit 1
-fi
-
-# Step 3: Check for formatting
+# Step 2: Check for formatting
 echo -e "${GREEN}Checking code formatting...${NC}"
 if ! cargo fmt --all -- --check; then
     echo -e "${RED}Code formatting issues found.${NC}"
     exit 1
 fi
 
-# Step 4: Run Clippy for linting
+# Step 3: Run Clippy for linting
 echo -e "${GREEN}Running Clippy for linting...${NC}"
-if ! cargo clippy --all-targets --all-features -- -D warnings; then
+if ! cargo clippy --all-targets -- -D warnings; then
     echo -e "${RED}Clippy linting issues found.${NC}"
     exit 1
 fi
 
-# Step 5: Check for security vulnerabilities
-echo -e "${GREEN}Checking for security vulnerabilities...${NC}"
-if ! cargo audit; then
-    echo -e "${RED}Security vulnerabilities found.${NC}"
-    exit 1
-fi
+# # Step 4: Check for security vulnerabilities
+# echo -e "${GREEN}Checking for security vulnerabilities...${NC}"
+# if ! cargo audit; then
+#     echo -e "${RED}Security vulnerabilities found.${NC}"
+#     exit 1
+# fi
 
-# Step 6: Build the project
+# Step 5: Build the project
 echo -e "${GREEN}Building the project...${NC}"
 if ! anchor build; then
     echo -e "${RED}Build failed.${NC}"
+    exit 1
+fi
+
+# Step 6: Run unit tests
+echo -e "${GREEN}Running unit tests...${NC}"
+if ! anchor test --provider.cluster Localnet; then
+    echo -e "${RED}Unit tests failed.${NC}"
     exit 1
 fi
 

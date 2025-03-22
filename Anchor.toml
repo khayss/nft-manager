@@ -11,8 +11,8 @@ nft_manager = "78TGdayzTnEPi8UVMeRgJYSx6uawNB3CHTrcBBMM2gDK"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Devnet"
-# cluster = "Localnet"
+# cluster = "Devnet"
+cluster = "Localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
