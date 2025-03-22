@@ -34,7 +34,7 @@ jobs:
         with:
           toolchain: stable
       - uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
-      - run: cargo lint
+      - run: cargo clippy --all-targets -- -D warnings
 
   build_and_test:
     runs-on: ubuntu-latest
