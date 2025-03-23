@@ -100,6 +100,7 @@ impl<'info> ListNFT<'info> {
         emit!(ListNFTEvent {
             owner: owner.key(),
             listing: self.listing.key(),
+            mint: mint.key(),
             price,
         });
 
@@ -111,5 +112,6 @@ impl<'info> ListNFT<'info> {
 pub struct ListNFTEvent {
     pub owner: Pubkey,
     pub listing: Pubkey,
+    pub mint: Pubkey,
     pub price: u64,
 }

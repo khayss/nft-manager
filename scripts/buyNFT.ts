@@ -11,10 +11,7 @@ async function main() {
       console.log("Price: ", event.price.toString());
     }
   );
-  const discriminant = new anchor.BN(6);
-  const seller = new anchor.web3.PublicKey(
-    "FbUvS32jJpQTqNgv1VSpDuqRgp1ZBWbf6UsQqEGAxPrT"
-  );
+  const discriminant = new anchor.BN(11);
 
   const [mintPda] = anchor.web3.PublicKey.findProgramAddressSync(
     [
@@ -23,6 +20,15 @@ async function main() {
     ],
     nftManagerProgram.programId
   );
+  const [listingPda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [
+      Uint8Array.from(JSON.parse(nftManagerProgram.idl.constants[7].value)),
+      mintPda.toBuffer(),
+    ],
+    nftManagerProgram.programId
+  );
+
+  const listingData = await nftManagerProgram.account.listing.fetch(listingPda);
 
   //   await nftManagerProgram.methods.createUserAccount().rpc();
 
@@ -30,7 +36,7 @@ async function main() {
     .buyNft(discriminant)
     .accountsPartial({
       mint: mintPda,
-      seller,
+      seller: listingData.owner,
     })
     .rpc();
 
