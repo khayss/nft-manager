@@ -384,13 +384,14 @@ describe("nft-manager", () => {
 
   it("List NFT", async () => {
     const mintDiscriminant = new anchor.BN(0);
-    const price = new anchor.BN(1_000_000_000); // 1 SOL
+    const price = new anchor.BN(1_0000); // 100 Dollars
 
     const [mintPda, mintPdaBump] = getPda(program, Pda.Mint, [
       mintDiscriminant.toArrayLike(Buffer, "le", 8),
     ]);
     const [listingPda, listingPdaBump] = getPda(program, Pda.Listing, [
       mintPda.toBuffer(),
+      program.provider.publicKey.toBuffer(),
     ]);
     const [listingTokenAccountPda, listingTokenAccountPdaBump] = getPda(
       program,
@@ -404,7 +405,7 @@ describe("nft-manager", () => {
     );
 
     const listNftIx = await program.methods
-      .listNft(mintDiscriminant, price)
+      .listNft({ discriminant: mintDiscriminant, price })
       .accountsPartial({
         mint: mintPda,
         // collection: collectionPda,
@@ -439,7 +440,10 @@ describe("nft-manager", () => {
     const [mintPda] = getPda(program, Pda.Mint, [
       mintDiscriminant.toArrayLike(Buffer, "le", 8),
     ]);
-    const [listingPda] = getPda(program, Pda.Listing, [mintPda.toBuffer()]);
+    const [listingPda] = getPda(program, Pda.Listing, [
+      mintPda.toBuffer(),
+      program.provider.publicKey.toBuffer(),
+    ]);
 
     const buyNftIx = await program.methods
       .buyNft(mintDiscriminant)
@@ -448,6 +452,7 @@ describe("nft-manager", () => {
         seller: program.provider.publicKey,
         mint: mintPda,
         listing: listingPda,
+        solPriceUpdate: solPriceUpdateKey,
       })
       .instruction();
 
@@ -467,17 +472,20 @@ describe("nft-manager", () => {
 
   it("Update Listing Price", async () => {
     const mintDiscriminant = new anchor.BN(1); // Use second NFT
-    const initialPrice = new anchor.BN(1_000_000_000); // 1 SOL
-    const updatedPrice = new anchor.BN(2_000_000_000); // 2 SOL
+    const initialPrice = new anchor.BN(100_000); // 1000 Dollars
+    const updatedPrice = new anchor.BN(200_000); // 2000 Dollars
 
     const [mintPda] = getPda(program, Pda.Mint, [
       mintDiscriminant.toArrayLike(Buffer, "le", 8),
     ]);
-    const [listingPda] = getPda(program, Pda.Listing, [mintPda.toBuffer()]);
+    const [listingPda] = getPda(program, Pda.Listing, [
+      mintPda.toBuffer(),
+      program.provider.publicKey.toBuffer(),
+    ]);
 
     // List the NFT first
     const listNftIx = await program.methods
-      .listNft(mintDiscriminant, initialPrice)
+      .listNft({ discriminant: mintDiscriminant, price: initialPrice })
       .accountsPartial({
         mint: mintPda,
         listing: listingPda,
@@ -515,7 +523,10 @@ describe("nft-manager", () => {
     const [mintPda] = getPda(program, Pda.Mint, [
       mintDiscriminant.toArrayLike(Buffer, "le", 8),
     ]);
-    const [listingPda] = getPda(program, Pda.Listing, [mintPda.toBuffer()]);
+    const [listingPda] = getPda(program, Pda.Listing, [
+      mintPda.toBuffer(),
+      program.provider.publicKey.toBuffer(),
+    ]);
 
     const delistNftIx = await program.methods
       .delistNft(mintDiscriminant)

@@ -27,29 +27,29 @@ export function getPda(
   const seeds = [];
   switch (pda) {
     case Pda.NftManager:
-      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[12].value)));
+      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[13].value)));
       break;
     case Pda.FeesCollector:
       seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[4].value)));
       break;
     case Pda.MintFeesCollector:
-      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[10].value)));
+      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[11].value)));
       break;
     case Pda.Collection:
       seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[1].value)));
       break;
     case Pda.Mint:
-      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[11].value)));
+      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[12].value)));
       break;
     case Pda.Listing:
       seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[7].value)));
 
       break;
     case Pda.ListingTokenAccount:
-      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[14].value)));
+      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[8].value)));
       break;
     case Pda.UserAccount:
-      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[13].value)));
+      seeds.push(Uint8Array.from(JSON.parse(program.idl.constants[15].value)));
       break;
     default:
       throw new Error("Invalid Pda");

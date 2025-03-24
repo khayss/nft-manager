@@ -1,5 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
-import { nftManagerProgram } from ".";
+import { nftManagerProgram, solPriceFeed, wallet } from ".";
 
 async function main() {
   const buyNftEventId = nftManagerProgram.addEventListener(
@@ -11,11 +11,11 @@ async function main() {
       console.log("Price: ", event.price.toString());
     }
   );
-  const discriminant = new anchor.BN(11);
+  const discriminant = new anchor.BN(14);
 
   const [mintPda] = anchor.web3.PublicKey.findProgramAddressSync(
     [
-      Uint8Array.from(JSON.parse(nftManagerProgram.idl.constants[11].value)),
+      Uint8Array.from(JSON.parse(nftManagerProgram.idl.constants[12].value)),
       discriminant.toArrayLike(Buffer, "le", 8),
     ],
     nftManagerProgram.programId
@@ -24,6 +24,7 @@ async function main() {
     [
       Uint8Array.from(JSON.parse(nftManagerProgram.idl.constants[7].value)),
       mintPda.toBuffer(),
+      wallet.publicKey.toBuffer(),
     ],
     nftManagerProgram.programId
   );
@@ -37,6 +38,7 @@ async function main() {
     .accountsPartial({
       mint: mintPda,
       seller: listingData.owner,
+      solPriceUpdate: solPriceFeed,
     })
     .rpc();
 

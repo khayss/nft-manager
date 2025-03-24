@@ -11,7 +11,7 @@ use crate::{
 };
 
 #[derive(Accounts)]
-#[instruction(discriminant: u64)]
+#[instruction(args: ListNFTArgs)]
 pub struct ListNFT<'info> {
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token2022>,
@@ -20,7 +20,7 @@ pub struct ListNFT<'info> {
     pub owner: Signer<'info>,
 
     #[account(
-        seeds = [MINT_TAG, &discriminant.to_le_bytes()],
+        seeds = [MINT_TAG, &args.discriminant.to_le_bytes()],
         bump,
         constraint = mint.supply == 1 @NFTManagerError::InvalidMintSupply,
     )]
@@ -45,7 +45,7 @@ pub struct ListNFT<'info> {
         init,
         payer = owner,
         space = 8 + Listing::INIT_SPACE,
-        seeds = [LISTING_TAG, mint.key().as_ref(),],
+        seeds = [LISTING_TAG, mint.key().as_ref(), owner.key().as_ref()],
         bump
     )]
     pub listing: Box<Account<'info, Listing>>,
@@ -68,7 +68,7 @@ pub struct ListNFT<'info> {
 }
 
 impl<'info> ListNFT<'info> {
-    pub fn list_nft(&mut self, bumps: &ListNFTBumps, price: u64) -> Result<()> {
+    pub fn list_nft(&mut self, bumps: &ListNFTBumps, args: ListNFTArgs) -> Result<()> {
         let owner = self.owner.to_account_info();
         let owner_token_account = self.owner_token_account.to_account_info();
         let mint = self.mint.to_account_info();
@@ -81,7 +81,7 @@ impl<'info> ListNFT<'info> {
 
         self.listing
             .as_mut()
-            .init(price, owner.key(), mint.key(), bumps.listing)?;
+            .init(args.price, owner.key(), mint.key(), bumps.listing)?;
 
         token_interface::transfer_checked(
             CpiContext::new(
@@ -101,11 +101,17 @@ impl<'info> ListNFT<'info> {
             owner: owner.key(),
             listing: self.listing.key(),
             mint: mint.key(),
-            price,
+            price: args.price,
         });
 
         Ok(())
     }
+}
+
+#[derive(AnchorDeserialize, AnchorSerialize)]
+pub struct ListNFTArgs {
+    pub price: u64,
+    pub discriminant: u64,
 }
 
 #[event]

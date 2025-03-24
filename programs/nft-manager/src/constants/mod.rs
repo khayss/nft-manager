@@ -45,3 +45,10 @@ pub const DISCRIMINANT_KEY: &str = "discriminant";
 
 #[constant]
 pub const COLLECTION_KEY: &str = "collection";
+
+#[constant]
+pub const SOL_PRICE_FEED_ID_HEX: &str =
+    "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d";
+
+#[constant]
+pub const LIST_NFT_PRICE_DECIMALS: u8 = 2;

@@ -38,7 +38,7 @@ pub struct DelistNFT<'info> {
 
     #[account(
         mut,
-        seeds = [LISTING_TAG, mint.key().as_ref(),],
+        seeds = [LISTING_TAG, mint.key().as_ref(), owner.key().as_ref()],
         bump,
         close = owner,
         has_one = mint @NFTManagerError::InvalidListing,

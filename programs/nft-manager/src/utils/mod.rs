@@ -18,7 +18,7 @@ use spl_token_metadata_interface::state::TokenMetadata;
 use spl_type_length_value::variable_len_pack::VariableLenPack;
 
 use crate::{
-    constants::{COLLECTION_KEY, DISCRIMINANT_KEY, MAX_AGE, WEIGHT_KEY},
+    constants::{COLLECTION_KEY, DISCRIMINANT_KEY, MAX_AGE, SOL_PRICE_FEED_ID_HEX, WEIGHT_KEY},
     errors::NFTManagerError,
     states::nft_manager::NFTManager,
 };
@@ -71,8 +71,7 @@ pub fn get_gold_value_in_lamport(
 ) -> Result<u64> {
     let gold_feed_id: [u8; 32] =
         get_feed_id_from_hex("765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2")?;
-    let sol_feed_id: [u8; 32] =
-        get_feed_id_from_hex("ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d")?;
+    let sol_feed_id: [u8; 32] = get_feed_id_from_hex(SOL_PRICE_FEED_ID_HEX)?;
     let gold_price =
         gold_price_update.get_price_no_older_than(&Clock::get()?, MAX_AGE, &gold_feed_id)?;
     let sol_price =

@@ -73,8 +73,8 @@ pub mod nft_manager {
         Ok(())
     }
 
-    pub fn list_nft(ctx: Context<ListNFT>, _dicriminant: u64, price: u64) -> Result<()> {
-        ctx.accounts.list_nft(&ctx.bumps, price)?;
+    pub fn list_nft(ctx: Context<ListNFT>, args: ListNFTArgs) -> Result<()> {
+        ctx.accounts.list_nft(&ctx.bumps, args)?;
 
         Ok(())
     }
