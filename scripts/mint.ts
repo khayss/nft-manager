@@ -13,6 +13,7 @@ async function main() {
     (event) => {
       console.log("Mint: ", event.mint.toString());
       console.log("Discriminant: ", event.discriminant.toString());
+      console.log("Recipient: ", event.recipient.toString());
       console.log(
         "Price in Sol: ",
         event.price.toNumber() / anchor.web3.LAMPORTS_PER_SOL
@@ -33,6 +34,7 @@ async function main() {
       .accounts({
         goldPriceUpdate: goldPriceFeed,
         solPriceUpdate: solPriceFeed,
+        recipient: nftManagerProgram.provider.publicKey,
       })
       .rpc();
     console.log("Transaction signature:", tx);

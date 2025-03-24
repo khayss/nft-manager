@@ -33,7 +33,7 @@ const connection = new anchor.web3.Connection("https://api.devnet.solana.com", {
 // "wss://api.devnet.solana.com",
 // "https://devnet.helius-rpc.com/?api-key=c7ac5a23-e869-4406-a6d7-983783bcc657",
 
-const provider = new anchor.AnchorProvider(connection, wallet2, {
+const provider = new anchor.AnchorProvider(connection, wallet, {
   commitment: "confirmed",
 });
 

@@ -38,14 +38,17 @@ pub struct MintNFT<'info> {
     )]
     pub mint: Box<InterfaceAccount<'info, token_interface::Mint>>,
 
+    /// CHECK: This account will receive the token
+    pub recipient: UncheckedAccount<'info>,
+
     #[account(
         init_if_needed,
         payer = signer,
         associated_token::mint = mint,
-        associated_token::authority = signer,
+        associated_token::authority = recipient,
         associated_token::token_program = token_program
     )]
-    pub destination: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
+    pub recipient_token_account: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
 
     #[account(
         init,
@@ -108,7 +111,7 @@ impl<'info> MintNFT<'info> {
             mint_signer_seeds,
             &mut self.nft_manager,
             self.mint.to_account_info(),
-            self.destination.to_account_info(),
+            self.recipient_token_account.to_account_info(),
             self.token_program.to_account_info(),
             system_program,
             signer,
@@ -119,7 +122,7 @@ impl<'info> MintNFT<'info> {
         emit!(MintNFTEvent {
             mint: mint_key,
             finalize_data: finalize_data.key(),
-            metadata: mint_key,
+            recipient: self.recipient.key(),
             price: price_in_lamports,
             discriminant,
         });
@@ -140,7 +143,7 @@ pub struct MintNFTArgs {
 pub struct MintNFTEvent {
     pub mint: Pubkey,
     pub finalize_data: Pubkey,
-    pub metadata: Pubkey,
+    pub recipient: Pubkey,
     pub price: u64,
     pub discriminant: u64,
 }

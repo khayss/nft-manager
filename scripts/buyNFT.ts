@@ -8,10 +8,11 @@ async function main() {
       console.log("Mint: ", event.mint.toBase58());
       console.log("Seller: ", event.seller.toBase58());
       console.log("Buyer: ", event.buyer.toBase58());
+      console.log("Recipient: ", event.recipient.toBase58());
       console.log("Price: ", event.price.toString());
     }
   );
-  const discriminant = new anchor.BN(14);
+  const discriminant = new anchor.BN(17);
 
   const [mintPda] = anchor.web3.PublicKey.findProgramAddressSync(
     [
@@ -20,16 +21,17 @@ async function main() {
     ],
     nftManagerProgram.programId
   );
-  const [listingPda] = anchor.web3.PublicKey.findProgramAddressSync(
-    [
-      Uint8Array.from(JSON.parse(nftManagerProgram.idl.constants[7].value)),
-      mintPda.toBuffer(),
-      wallet.publicKey.toBuffer(),
-    ],
-    nftManagerProgram.programId
-  );
 
-  const listingData = await nftManagerProgram.account.listing.fetch(listingPda);
+  const listingAccounts = await nftManagerProgram.account.listing.all([
+    {
+      memcmp: {
+        offset: 8 + 8 + 32,
+        bytes: mintPda.toBase58(),
+      },
+    },
+  ]);
+
+  const listing = listingAccounts[0];
 
   //   await nftManagerProgram.methods.createUserAccount().rpc();
 
@@ -37,8 +39,9 @@ async function main() {
     .buyNft(discriminant)
     .accountsPartial({
       mint: mintPda,
-      seller: listingData.owner,
+      seller: listing.account.owner,
       solPriceUpdate: solPriceFeed,
+      recipient: wallet.publicKey,
     })
     .rpc();
 

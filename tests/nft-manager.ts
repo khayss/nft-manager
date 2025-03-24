@@ -151,6 +151,7 @@ describe("nft-manager", () => {
       .accounts({
         goldPriceUpdate: goldPriceUpdateKey,
         solPriceUpdate: solPriceUpdateKey,
+        recipient: program.provider.publicKey,
       })
       .instruction();
 
@@ -453,6 +454,7 @@ describe("nft-manager", () => {
         mint: mintPda,
         listing: listingPda,
         solPriceUpdate: solPriceUpdateKey,
+        recipient: program.provider.publicKey,
       })
       .instruction();
 
@@ -462,12 +464,12 @@ describe("nft-manager", () => {
     );
 
     // Verify the NFT was transferred
-    const buyerTokenAccount =
+    const recipientTokenAccount =
       await program.provider.connection.getTokenAccountsByOwner(
-        buyer.publicKey,
+        program.provider.publicKey,
         { mint: mintPda }
       );
-    expect(buyerTokenAccount.value.length).to.equal(1);
+    expect(recipientTokenAccount.value.length).to.equal(1);
   });
 
   it("Update Listing Price", async () => {

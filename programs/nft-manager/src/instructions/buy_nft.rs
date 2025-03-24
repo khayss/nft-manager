@@ -40,6 +40,9 @@ pub struct BuyNFT<'info> {
     )]
     pub mint: Box<InterfaceAccount<'info, token_interface::Mint>>,
 
+    /// CHECK: The account that will receive the NFT
+    pub recipient: UncheckedAccount<'info>,
+
     #[account(
         mut,
         close = seller_account,
@@ -60,10 +63,10 @@ pub struct BuyNFT<'info> {
         init_if_needed,
         payer = buyer,
         associated_token::mint = mint,
-        associated_token::authority = buyer,
+        associated_token::authority = recipient,
         associated_token::token_program = token_program,
     )]
-    pub buyer_token_account: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
+    pub recipient_token_account: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
 
     #[account(
         mut,
@@ -176,7 +179,7 @@ impl<'info> BuyNFT<'info> {
                     mint: mint.clone(),
                     authority: listing_token_account.clone(),
                     from: listing_token_account,
-                    to: self.buyer_token_account.to_account_info(),
+                    to: self.recipient_token_account.to_account_info(),
                 },
                 listing_token_account_signer_seeds,
             ),
@@ -187,6 +190,7 @@ impl<'info> BuyNFT<'info> {
         emit!(BuyNFTEvent {
             buyer: buyer.key(),
             seller: seller.key(),
+            recipient: self.recipient.key(),
             mint: mint.key(),
             price: self.listing.price,
         });
@@ -199,6 +203,7 @@ impl<'info> BuyNFT<'info> {
 pub struct BuyNFTEvent {
     pub buyer: Pubkey,
     pub seller: Pubkey,
+    pub recipient: Pubkey,
     pub mint: Pubkey,
     pub price: u64,
 }

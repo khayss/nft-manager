@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { nftManagerProgram } from ".";
 
 async function main() {
-  const discriminant = new anchor.BN(14);
+  const discriminant = new anchor.BN(17);
 
   const [mintPda] = anchor.web3.PublicKey.findProgramAddressSync(
     [
