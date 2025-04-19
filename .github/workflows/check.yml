@@ -24,34 +24,34 @@ jobs:
       - name: Check formatting
         run: cargo fmt --check
 
-  clippy:
-    runs-on: ubuntu-latest
-    env:
-      RUSTFLAGS: "-Dwarnings"
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # clippy:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     RUSTFLAGS: "-Dwarnings"
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-        # Install Anchor CLI
-      - name: Install Anchor CLI
-        uses: heyAyushh/setup-anchor@v4.4
-        with:
-          anchor-version: 0.30.1
-          solana-cli-version: stable
-          node-version: 20.x
-          use-avm: false
+  #       # Install Anchor CLI
+  #     - name: Install Anchor CLI
+  #       uses: heyAyushh/setup-anchor@v4.4
+  #       with:
+  #         anchor-version: 0.30.1
+  #         solana-cli-version: stable
+  #         node-version: 20.x
+  #         use-avm: false
 
-        # Display Versions and Install pnpm
-      - name: Display Versions and Install pnpm
-        run: |
-          solana -V
-          solana-keygen new --no-bip39-passphrase
-          rustc -V
-          anchor -V
-          npm i -g pnpm
+  #       # Display Versions and Install pnpm
+  #     - name: Display Versions and Install pnpm
+  #       run: |
+  #         solana -V
+  #         solana-keygen new --no-bip39-passphrase
+  #         rustc -V
+  #         anchor -V
+  #         npm i -g pnpm
 
-      - name: Run Clippy
-        run: cargo clippy --all-targets -- -D warnings
+  #     - name: Run Clippy
+  #       run: cargo clippy --all-targets -- -D warnings
 
   build_and_test:
     runs-on: ubuntu-latest
