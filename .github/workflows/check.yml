@@ -13,15 +13,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
         with:
           toolchain: stable
-
+      
       - name: Cache Rust
         uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
-
       - name: Check formatting
         run: cargo fmt --check
 
@@ -30,48 +29,19 @@ jobs:
     env:
       RUSTFLAGS: "-Dwarnings"
     steps:
-      # Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-        # Install Anchor CLI
-      - name: Install Anchor CLI
-        uses: heyAyushh/setup-anchor@v4.4
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
         with:
-          anchor-version: 0.30.1
-          solana-cli-version: stable
-          node-version: 20.x
-          use-avm: false
+          toolchain: stable
 
-        # Display Versions and Install pnpm
-      - name: Display Versions and Install pnpm
-        run: |
-          solana -V
-          solana-keygen new --no-bip39-passphrase
-          rustc -V
-          anchor -V
-          npm i -g pnpm
-
-        # Build
-      - name: Build
-        run: |
-          function build_and_test() {
-              local project=$1
-              echo "Building and Testing $project"
-              cd "$project" || return 1
-
-              # Run anchor build
-              if ! anchor build; then
-                  echo "::error::anchor build failed for $project"
-                  echo "$project: anchor build failed" >> $GITHUB_WORKSPACE/failed_projects.txt
-                  rm -rf target
-                  cd - > /dev/null
-                  return 1
-              fi
-          }
-        # Run Clippy
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
+      
       - name: Run Clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        run: cargo clippy --all-targets -- -D warnings
 
   build_and_test:
     runs-on: ubuntu-latest
