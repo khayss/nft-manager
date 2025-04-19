@@ -13,12 +13,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
         with:
           toolchain: stable
-      
+
       - name: Cache Rust
         uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
       - name: Check formatting
@@ -32,14 +32,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
+        # Install Anchor CLI
+      - name: Install Anchor CLI
+        uses: heyAyushh/setup-anchor@v4.4
         with:
-          toolchain: stable
+          anchor-version: 0.30.1
+          solana-cli-version: stable
+          node-version: 20.x
+          use-avm: false
 
-      - name: Cache Rust
-        uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
-      
+        # Display Versions and Install pnpm
+      - name: Display Versions and Install pnpm
+        run: |
+          solana -V
+          solana-keygen new --no-bip39-passphrase
+          rustc -V
+          anchor -V
+          npm i -g pnpm
+
       - name: Run Clippy
         run: cargo clippy --all-targets -- -D warnings
 
