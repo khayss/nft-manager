@@ -2,11 +2,7 @@ name: NFT Manager CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
 
 env:
   CARGO_TERM_COLOR: always
@@ -15,11 +11,17 @@ jobs:
   rustfmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
         with:
           toolchain: stable
-      - uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
+
       - name: Check formatting
         run: cargo fmt --check
 
@@ -28,14 +30,31 @@ jobs:
     env:
       RUSTFLAGS: "-Dwarnings"
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@7b1c307e0dcbda6122208f10795a713336a9b35a
+      # Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+        # Install Anchor CLI
+      - name: Install Anchor CLI
+        uses: heyAyushh/setup-anchor@v4.4
         with:
-          toolchain: stable
-          components: clippy
-          targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab
-      - run: cargo clippy --all-targets --all-features -- -D warnings
+          anchor-version: 0.30.1
+          solana-cli-version: stable
+          node-version: 20.x
+          use-avm: false
+
+        # Display Versions and Install pnpm
+      - name: Display Versions and Install pnpm
+        run: |
+          solana -V
+          solana-keygen new --no-bip39-passphrase
+          rustc -V
+          anchor -V
+          npm i -g pnpm
+
+        # Run Clippy
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
   build_and_test:
     runs-on: ubuntu-latest
